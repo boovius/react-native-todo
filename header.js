@@ -1,0 +1,40 @@
+import React, { Component } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+
+export default class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    const { onAddItem, onChange, value } = this.props;
+    return (
+      <View style={styles.header}>
+        <TextInput
+          value={value}
+          onChangeText={onChange}
+          onSubmitEditing={onAddItem}
+          placeholder="what needs to be done?"
+          blurOnSubmit={false}
+          returnKeyType="done"
+          style={styles.input}
+        />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+    height: 50
+  }
+})
