@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default class Header extends Component {
   constructor(props) {
@@ -9,9 +9,12 @@ export default class Header extends Component {
   }
 
   render() {
-    const { onAddItem, onChange, value } = this.props;
+    const { onAddItem, onChange, onToggleAllComplete, value } = this.props;
     return (
       <View style={styles.header}>
+        <TouchableOpacity onPress={onToggleAllComplete}>
+          <Text style={styles.toggleIcon}>{String.fromCharCode(10003)}</Text>
+        </TouchableOpacity>
         <TextInput
           value={value}
           onChangeText={onChange}
@@ -30,11 +33,16 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  toggleIcon: {
+    fontSize: 30,
+    color: "#CCC"
   },
   input: {
     flex: 1,
+    marginLeft: 16,
     height: 50
   }
 })
