@@ -10,6 +10,8 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, FlatList } from 'react-native';
 import Header from './header';
 import Footer from './footer';
+import Row from './row';
+
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -21,7 +23,20 @@ export default class App extends Component<Props> {
       allComplete: false
     }
     this.handleAddItem = this.handleAddItem.bind(this)
+    this.handleToggleComplete = this.handleToggleComplete.bind(this)
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this)
+  }
+
+  handleToggleComplete(key, complete) {
+    console.log('key', key)
+    console.log('complete', complete)
+    const newItems = this.state.items.map(item => {
+      return {
+        ...item,
+        complete: !complete
+      }
+    })
+    this.setState({ items: newItems })
   }
 
   handleToggleAllComplete() {
@@ -30,8 +45,7 @@ export default class App extends Component<Props> {
       ... item, 
       complete
     }))
-    this.setState({items: newItems, allComplete: complete})
-    console.table(this.state.items)
+    this.setState({items: newItems, allComplete: complete});
   }
 
   handleAddItem() {
@@ -39,13 +53,13 @@ export default class App extends Component<Props> {
     const newItems = [
       ... this.state.items,
       {
-        key: Date.now(),
+        key: Date.now().toString(),
+        thing: Date.now(),
         text: this.state.value,
         complete: false
       }
     ]
     this.setState({items: newItems, value: ""})
-    console.table(this.state.items)
   }
 
   render() {
@@ -60,8 +74,12 @@ export default class App extends Component<Props> {
         <View style={styles.content}>  
           <FlatList
             data={this.state.items}
-            renderItem={({ item })=><Text style={styles.todo}>{item.text}</Text>}
-            keyExtractor = {(item) => item.key.toString()}
+            renderItem={({ item }) =>
+              <Row 
+                onToggleComplete={()=>this.handleToggleComplete(item.key, item.complete)}
+                {...item}
+              />
+            }
           />
         </View>
         <Footer />
@@ -80,13 +98,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1
-  },
-  todo: {
-    color: 'black',
-    backgroundColor: 'yellow',
-    fontSize: 40,
-    marginTop: 10,
-    textAlign: 'right',
-    marginRight: 10
   }
 })
