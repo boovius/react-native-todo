@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, FlatList } from 'react-native';
+import {Platform, StyleSheet, Text, View, FlatList, AsyncStorage } from 'react-native';
 import Header from './header';
 import Footer from './footer';
 import Row from './row';
@@ -21,12 +21,29 @@ export default class App extends Component {
       allComplete: false,
       filter: 'ALL'
     }
+    this.setSource = this.setSource.bind(this)
     this.handleAddItem = this.handleAddItem.bind(this)
     this.handleDeleteTodo = this.handleDeleteTodo.bind(this)
     this.handleToggleComplete = this.handleToggleComplete.bind(this)
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this)
     this.handleFilter = this.handleFilter.bind(this)
     this.filteredItems = this.filteredItems.bind(this)
+  }
+
+  componentWillMount(){
+    AsyncStorage.getItem("items").then(json => {
+      try {
+        const items = JSON.parse(json);
+        this.setSource({items});
+      } catch(e) {
+        console.log('an error occured', e)
+      }
+    })
+  }
+
+  setSource(state) {
+    this.setState(state)
+    AsyncStorage.setItem("items", JSON.stringify(this.state.items));
   }
 
   handleToggleComplete(key, complete) {
@@ -37,7 +54,7 @@ export default class App extends Component {
         complete: !complete
       }
     })
-    this.setState({ items: newItems })
+    this.setSource({ items: newItems })
   }
 
   handleToggleAllComplete() {
@@ -46,12 +63,12 @@ export default class App extends Component {
       ... item, 
       complete
     }))
-    this.setState({items: newItems, allComplete: complete});
+    this.setSource({items: newItems, allComplete: complete});
   }
 
   handleDeleteTodo(key) {
     const newItems = this.state.items.filter(item => key !== item.key)
-    this.setState({items: newItems})
+    this.setSource({items: newItems})
   }
 
   handleAddItem() {
@@ -64,11 +81,11 @@ export default class App extends Component {
         complete: false
       }
     ]
-    this.setState({items: newItems, value: ""})
+    this.setSource({items: newItems, value: ""})
   }
 
   handleFilter(filter) {
-    this.setState({filter})
+    this.setSource({filter})
   }
 
   filteredItems() {
