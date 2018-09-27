@@ -18,11 +18,15 @@ export default class App extends Component {
     this.state = {
       value: "",
       items: [],
-      allComplete: false
+      allComplete: false,
+      filter: 'ALL'
     }
     this.handleAddItem = this.handleAddItem.bind(this)
+    this.handleDeleteTodo = this.handleDeleteTodo.bind(this)
     this.handleToggleComplete = this.handleToggleComplete.bind(this)
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this)
+    this.handleFilter = this.handleFilter.bind(this)
+    this.filteredItems = this.filteredItems.bind(this)
   }
 
   handleToggleComplete(key, complete) {
@@ -45,18 +49,35 @@ export default class App extends Component {
     this.setState({items: newItems, allComplete: complete});
   }
 
+  handleDeleteTodo(key) {
+    const newItems = this.state.items.filter(item => key !== item.key)
+    this.setState({items: newItems})
+  }
+
   handleAddItem() {
     if (!this.state.value) return;
     const newItems = [
       ... this.state.items,
       {
         key: Date.now().toString(),
-        thing: Date.now(),
         text: this.state.value,
         complete: false
       }
     ]
     this.setState({items: newItems, value: ""})
+  }
+
+  handleFilter(filter) {
+    this.setState({filter})
+  }
+
+  filteredItems() {
+    if (this.state.filter === 'ALL') return this.state.items;
+    if (this.state.filter === 'COMPLETED') {
+      return this.state.items.filter(item => item.complete === true)
+    } else {
+      return this.state.items.filter(item => item.complete !== true)
+    }
   }
 
   render() {
@@ -72,19 +93,20 @@ export default class App extends Component {
           <FlatList
             ItemSeparatorComponent={({highlighted}) => (
               <View style={[styles.separator, highlighted && {marginLeft: 0}]} />
-            )} 
-            data={this.state.items}
+            )}
+            data={this.filteredItems()}
             renderItem={({ item }) =>
               <Row 
                 onToggleComplete={()=> 
                   this.handleToggleComplete(item.key, item.complete)
                 }
+                onDelete={()=>this.handleDeleteTodo(item.key)}
                 {...item}
               />
             }
           />
         </View>
-        <Footer />
+        <Footer filter={this.state.filter} filterTodos={this.handleFilter} />
       </View>
     );
   }
