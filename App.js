@@ -12,9 +12,7 @@ import Header from './header';
 import Footer from './footer';
 import Row from './row';
 
-
-type Props = {};
-export default class App extends Component<Props> {
+export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -28,9 +26,8 @@ export default class App extends Component<Props> {
   }
 
   handleToggleComplete(key, complete) {
-    console.log('key', key)
-    console.log('complete', complete)
     const newItems = this.state.items.map(item => {
+      if (key !== item.key) return item;
       return {
         ...item,
         complete: !complete
@@ -73,10 +70,15 @@ export default class App extends Component<Props> {
         />
         <View style={styles.content}>  
           <FlatList
+            ItemSeparatorComponent={({highlighted}) => (
+              <View style={[styles.separator, highlighted && {marginLeft: 0}]} />
+            )} 
             data={this.state.items}
             renderItem={({ item }) =>
               <Row 
-                onToggleComplete={()=>this.handleToggleComplete(item.key, item.complete)}
+                onToggleComplete={()=> 
+                  this.handleToggleComplete(item.key, item.complete)
+                }
                 {...item}
               />
             }
@@ -98,5 +100,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1
+  },
+  separator: {
+    height: 50,
   }
 })
