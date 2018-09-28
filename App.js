@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, FlatList, AsyncStorage } from 'react-native';
+import { Platform, StyleSheet, Text, View, FlatList, AsyncStorage, ActivityIndicator } from 'react-native';
 import Header from './header';
 import Footer from './footer';
 import Row from './row';
@@ -16,6 +16,7 @@ export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      loading: true,
       value: "",
       items: [],
       allComplete: false,
@@ -34,7 +35,7 @@ export default class App extends Component {
     AsyncStorage.getItem("items").then(json => {
       try {
         const items = JSON.parse(json);
-        this.setSource({items});
+        this.setSource({items, loading: false});
       } catch(e) {
         console.log('an error occured', e)
       }
@@ -125,6 +126,12 @@ export default class App extends Component {
           />
         </View>
         <Footer filter={this.state.filter} filterTodos={this.handleFilter} />
+        {this.state.loading && <View style={styles.loader}>
+              <ActivityIndicator 
+                animate
+                size='large'
+              />
+          </View>}
       </View>
     );
   }
@@ -143,5 +150,15 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 50,
+  },
+  loader: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, .2)'
   }
 })
