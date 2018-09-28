@@ -42,8 +42,9 @@ export default class App extends Component {
   }
 
   setSource(state) {
-    this.setState(state)
-    AsyncStorage.setItem("items", JSON.stringify(this.state.items));
+    this.setState(state, ()=>{
+      AsyncStorage.setItem("items", JSON.stringify(this.state.items));
+    })
   }
 
   handleToggleComplete(key, complete) {
